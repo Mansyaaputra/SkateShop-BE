@@ -1,0 +1,228 @@
+# API Skateshop
+# File ini berisi request untuk menguji API backend Skateshop
+# Gunakan ekstensi "REST Client" di VS Code untuk menjalankan request ini
+
+### BASE URL
+@baseUrl = http://localhost:5000
+
+### ============================================================
+### AUTENTIKASI
+### ============================================================
+
+### Register - Mendaftarkan pengguna baru
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "username": "user_test",
+    "email": "user_test@example.com",
+    "password": "password123"
+}
+
+### Login - Masuk ke akun
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "user_test@example.com",
+    "password": "password123"
+}
+
+### Cek Status Session - Memeriksa apakah pengguna sudah login
+GET {{baseUrl}}/auth/session
+
+### Logout - Keluar dari akun
+POST {{baseUrl}}/auth/logout
+
+### ============================================================
+### USERS (PENGGUNA)
+### ============================================================
+
+### Dapatkan Semua Pengguna
+GET {{baseUrl}}/users
+
+### Dapatkan Pengguna berdasarkan ID
+GET {{baseUrl}}/users/1
+
+### Buat Pengguna Baru
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "username": "new_user",
+    "email": "new_user@example.com",
+    "password": "password123"
+}
+
+### Update Pengguna
+PUT {{baseUrl}}/users/1
+Content-Type: application/json
+
+{
+    "username": "updated_username"
+}
+
+### Hapus Pengguna
+DELETE {{baseUrl}}/users/1
+
+### ============================================================
+### PRODUCTS (PRODUK)
+### ============================================================
+
+### Dapatkan Daftar Kategori Produk
+GET {{baseUrl}}/products/categories
+
+### Dapatkan Ukuran yang Tersedia untuk Kategori Deck
+GET {{baseUrl}}/products/categories/deck/sizes
+
+### Dapatkan Semua Produk (Publik)
+GET {{baseUrl}}/products
+
+### Filter Produk berdasarkan Kategori
+GET {{baseUrl}}/products?category=deck
+
+### Filter Produk berdasarkan Kategori dan Ukuran
+GET {{baseUrl}}/products?category=deck&size=8.0
+
+### Dapatkan Produk berdasarkan ID (Publik)
+GET {{baseUrl}}/products/1
+
+### Buat Produk Baru - Deck
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{
+    "name": "Element Skateboard Deck",
+    "description": "Deck kayu maple 7-ply berkualitas tinggi dari Element",
+    "category": "deck",
+    "size": "8.0",
+    "price": 750000,
+    "stock": 10,
+    "imageUrl": "element-deck.jpg"
+}
+
+### Buat Produk Baru - Trucks
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{
+    "name": "Independent Stage 11 Trucks",
+    "description": "Trucks berkualitas tinggi, kuat dan tahan lama",
+    "category": "trucks",
+    "size": "149mm",
+    "price": 650000,
+    "stock": 8,
+    "imageUrl": "independent-trucks.jpg"
+}
+
+### Buat Produk Baru - Wheels
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{
+    "name": "Spitfire Formula Four Wheels",
+    "description": "Wheels dengan grip dan durabilitas terbaik",
+    "category": "wheels",
+    "size": "52mm",
+    "price": 450000,
+    "stock": 12,
+    "imageUrl": "spitfire-wheels.jpg"
+}
+
+### Buat Produk Baru - Bearing
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{
+    "name": "Bones Reds Bearings",
+    "description": "Bearing presisi tinggi dengan kecepatan maksimal",
+    "category": "bearing",
+    "price": 350000,
+    "stock": 15,
+    "imageUrl": "bones-bearings.jpg"
+}
+
+### Buat Produk Baru - Griptape
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{
+    "name": "Mob Grip Tape",
+    "description": "Griptape dengan daya cengkeram maksimal",
+    "category": "griptape",
+    "price": 150000,
+    "stock": 20,
+    "imageUrl": "mob-griptape.jpg"
+}
+
+### Buat Produk Baru - Bolt
+POST {{baseUrl}}/products
+Content-Type: application/json
+
+{
+    "name": "Thunder Hardware Bolts",
+    "description": "Bolt dan mur berkualitas tinggi untuk memasang trucks",
+    "category": "bolt",
+    "price": 80000,
+    "stock": 25,
+    "imageUrl": "thunder-bolts.jpg"
+}
+
+### Update Produk
+PUT {{baseUrl}}/products/1
+Content-Type: application/json
+
+{
+    "name": "Element Skateboard Deck Pro",
+    "price": 800000,
+    "stock": 5
+}
+
+### Hapus Produk
+DELETE {{baseUrl}}/products/1
+
+### ============================================================
+### ORDERS (PESANAN)
+### ============================================================
+
+### Dapatkan Semua Pesanan
+GET {{baseUrl}}/orders
+
+### Dapatkan Pesanan berdasarkan ID
+GET {{baseUrl}}/orders/1
+
+### Buat Pesanan Baru
+POST {{baseUrl}}/orders
+Content-Type: application/json
+
+{
+    "userId": 1,
+    "productId": 1,
+    "quantity": 2,
+    "totalPrice": 1600000,
+    "status": "pending",
+    "shippingAddress": "Jl. Contoh No. 123, Jakarta Selatan"
+}
+
+### Update Pesanan
+PUT {{baseUrl}}/orders/1
+Content-Type: application/json
+
+{
+    "quantity": 3,
+    "totalPrice": 2400000
+}
+
+### Update Status Pesanan
+PATCH {{baseUrl}}/orders/1/status
+Content-Type: application/json
+
+{
+    "status": "shipped"
+}
+
+### Hapus Pesanan
+DELETE {{baseUrl}}/orders/1
+
+### Dapatkan Riwayat Pesanan Pengguna
+GET {{baseUrl}}/orders/user/1
