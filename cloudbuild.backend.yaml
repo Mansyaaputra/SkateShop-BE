@@ -3,57 +3,71 @@
 
 steps:
   # Step 1: Build Docker image
-  - name: 'gcr.io/cloud-builders/docker'
-    args: [
-      'build',
-      '-t', 'gcr.io/$PROJECT_ID/skateshop-backend:$COMMIT_SHA',
-      '-t', 'gcr.io/$PROJECT_ID/skateshop-backend:latest',
-      './backend'
-    ]
-    id: 'build-image'
-    
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "gcr.io/$PROJECT_ID/skateshop-backend:$COMMIT_SHA",
+        "-t",
+        "gcr.io/$PROJECT_ID/skateshop-backend:latest",
+        "./backend",
+      ]
+    id: "build-image"
+
   # Step 2: Push Docker image ke Container Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/skateshop-backend:$COMMIT_SHA']
-    id: 'push-image'
-    
-  # Step 3: Deploy ke Cloud Run
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/skateshop-backend:$COMMIT_SHA"]
+    id:
+      "push-image"
+      # Step 3: Deploy ke Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: gcloud
-    args: [
-      'run', 'deploy', 'skateshop-backend',
-      '--image', 'gcr.io/$PROJECT_ID/skateshop-backend:$COMMIT_SHA',
-      '--region', 'asia-southeast1',
-      '--platform', 'managed',
-      '--allow-unauthenticated',
-      '--port', '5000',
-      '--set-env-vars', 'DB_NAME=$_DB_NAME,DB_USERNAME=$_DB_USERNAME,DB_PASSWORD=$_DB_PASSWORD,DB_HOST=$_DB_HOST,PORT=5000,SESSION_SECRET=$_SESSION_SECRET'
-    ]
-    id: 'deploy-cloud-run'
-    
+    args:
+      [
+        "run",
+        "deploy",
+        "skateshop-backend",
+        "--image",
+        "gcr.io/$PROJECT_ID/skateshop-backend:$COMMIT_SHA",
+        "--region",
+        "asia-southeast1",
+        "--platform",
+        "managed",
+        "--allow-unauthenticated",
+        "--port",
+        "5000",
+        "--set-env-vars",
+        "DB_NAME=$_DB_NAME,DB_USERNAME=$_DB_USERNAME,DB_PASSWORD=$_DB_PASSWORD,DB_HOST=$_DB_HOST,SESSION_SECRET=$_SESSION_SECRET",
+      ]
+    id: "deploy-cloud-run"
+
   # Step 4: Cleanup - Hapus image tidak terpakai untuk menghemat ruang
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: gcloud
-    args: [
-      'container', 'images', 'delete',
-      'gcr.io/$PROJECT_ID/skateshop-backend:$COMMIT_SHA',
-      '--quiet'
-    ]
-    id: 'cleanup'
+    args:
+      [
+        "container",
+        "images",
+        "delete",
+        "gcr.io/$PROJECT_ID/skateshop-backend:$COMMIT_SHA",
+        "--quiet",
+      ]
+    id: "cleanup"
 
 # Image yang akan dipublikasikan
 images:
-  - 'gcr.io/$PROJECT_ID/skateshop-backend:latest'
+  - "gcr.io/$PROJECT_ID/skateshop-backend:latest"
 
 # Timeout untuk keseluruhan build (10 menit)
-timeout: '600s'
+timeout: "600s"
 
 # Substitusi untuk variabel lingkungan database
 substitutions:
   _DB_NAME: skateshop
   _DB_USERNAME: root
-  _DB_PASSWORD: ''
-  _DB_HOST: localhost
+  _DB_PASSWORD: bebas
+  _DB_HOST: 34.31.92.17
   _SESSION_SECRET: skateshop-session-secret
 
 # Opsi tambahan
