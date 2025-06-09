@@ -1,7 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors"; // import cors
-import session from "express-session"; // import session
 import db from "./config/Database.js";
 
 // Import routes
@@ -15,20 +14,9 @@ const app = express();
 
 app.use(cors({
   origin: true, // allow all origins
-  credentials: true // allow cookies to be sent across domains
+  credentials: true // allow credentials (for Authorization headers)
 })); 
 app.use(express.json()); // parsing JSON body
-
-// Configure session middleware
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'skateshop-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { 
-    secure: false, // set to true if using HTTPS
-    maxAge: 24 * 60 * 60 * 1000, // 1 day
-  }
-}));
 
 // Register routes
 app.use("/auth", AuthRoutes);

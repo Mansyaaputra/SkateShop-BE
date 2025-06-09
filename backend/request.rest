@@ -1,9 +1,13 @@
-# API Skateshop
-# File ini berisi request untuk menguji API backend Skateshop
+# API Skateshop - Session Based Authentication
+# File ini berisi request untuk menguji API backend Skateshop dengan session
 # Gunakan ekstensi "REST Client" di VS Code untuk menjalankan request ini
+# Setelah login, copy sessionId dari response dan gunakan sebagai Bearer token
 
 ### BASE URL
 @baseUrl = http://localhost:5000
+
+### Contoh Session ID (ganti dengan sessionId dari response login)
+@sessionId = your_session_id_here
 
 ### ============================================================
 ### AUTENTIKASI
@@ -19,7 +23,7 @@ Content-Type: application/json
     "password": "password123"
 }
 
-### Login - Masuk ke akun
+### Login - Masuk ke akun (akan memberikan sessionId)
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
@@ -28,25 +32,38 @@ Content-Type: application/json
     "password": "password123"
 }
 
-### Cek Status Session - Memeriksa apakah pengguna sudah login
-GET {{baseUrl}}/auth/session
+### Cek Status Auth - Memeriksa apakah session masih valid
+GET {{baseUrl}}/auth/check
+Authorization: Bearer {{sessionId}}
 
-### Logout - Keluar dari akun
+### Info Session - Mendapatkan informasi session
+GET {{baseUrl}}/auth/session-info
+Authorization: Bearer {{sessionId}}
+
+### Logout - Keluar dari akun (menghapus session)
 POST {{baseUrl}}/auth/logout
+Authorization: Bearer {{sessionId}}
+
+### Logout All - Keluar dari semua device
+POST {{baseUrl}}/auth/logout-all
+Authorization: Bearer {{sessionId}}
 
 ### ============================================================
-### USERS (PENGGUNA)
+### USERS (PENGGUNA) - Memerlukan Session
 ### ============================================================
 
 ### Dapatkan Semua Pengguna
 GET {{baseUrl}}/users
+Authorization: Bearer {{sessionId}}
 
 ### Dapatkan Pengguna berdasarkan ID
 GET {{baseUrl}}/users/1
+Authorization: Bearer {{sessionId}}
 
 ### Buat Pengguna Baru
 POST {{baseUrl}}/users
 Content-Type: application/json
+Authorization: Bearer {{sessionId}}
 
 {
     "username": "new_user",
@@ -57,6 +74,7 @@ Content-Type: application/json
 ### Update Pengguna
 PUT {{baseUrl}}/users/1
 Content-Type: application/json
+Authorization: Bearer {{sessionId}}
 
 {
     "username": "updated_username"
@@ -64,32 +82,34 @@ Content-Type: application/json
 
 ### Hapus Pengguna
 DELETE {{baseUrl}}/users/1
+Authorization: Bearer {{sessionId}}
 
 ### ============================================================
-### PRODUCTS (PRODUK)
+### PRODUCTS (PRODUK) - Operasi Admin Memerlukan Session
 ### ============================================================
 
-### Dapatkan Daftar Kategori Produk
+### Dapatkan Daftar Kategori Produk (Publik)
 GET {{baseUrl}}/products/categories
 
-### Dapatkan Ukuran yang Tersedia untuk Kategori Deck
+### Dapatkan Ukuran yang Tersedia untuk Kategori Deck (Publik)
 GET {{baseUrl}}/products/categories/deck/sizes
 
 ### Dapatkan Semua Produk (Publik)
 GET {{baseUrl}}/products
 
-### Filter Produk berdasarkan Kategori
+### Filter Produk berdasarkan Kategori (Publik)
 GET {{baseUrl}}/products?category=deck
 
-### Filter Produk berdasarkan Kategori dan Ukuran
+### Filter Produk berdasarkan Kategori dan Ukuran (Publik)
 GET {{baseUrl}}/products?category=deck&size=8.0
 
 ### Dapatkan Produk berdasarkan ID (Publik)
 GET {{baseUrl}}/products/1
 
-### Buat Produk Baru - Deck
+### Buat Produk Baru - Deck (Memerlukan Session)
 POST {{baseUrl}}/products
 Content-Type: application/json
+Authorization: Bearer {{sessionId}}
 
 {
     "name": "Element Skateboard Deck",
@@ -101,9 +121,10 @@ Content-Type: application/json
     "imageUrl": "element-deck.jpg"
 }
 
-### Buat Produk Baru - Trucks
+### Buat Produk Baru - Trucks (Memerlukan Session)
 POST {{baseUrl}}/products
 Content-Type: application/json
+Authorization: Bearer {{sessionId}}
 
 {
     "name": "Independent Stage 11 Trucks",
@@ -115,9 +136,10 @@ Content-Type: application/json
     "imageUrl": "independent-trucks.jpg"
 }
 
-### Buat Produk Baru - Wheels
+### Buat Produk Baru - Wheels (Memerlukan Session)
 POST {{baseUrl}}/products
 Content-Type: application/json
+Authorization: Bearer {{sessionId}}
 
 {
     "name": "Spitfire Formula Four Wheels",
@@ -129,9 +151,10 @@ Content-Type: application/json
     "imageUrl": "spitfire-wheels.jpg"
 }
 
-### Buat Produk Baru - Bearing
+### Buat Produk Baru - Bearing (Memerlukan Session)
 POST {{baseUrl}}/products
 Content-Type: application/json
+Authorization: Bearer {{sessionId}}
 
 {
     "name": "Bones Reds Bearings",
@@ -142,9 +165,10 @@ Content-Type: application/json
     "imageUrl": "bones-bearings.jpg"
 }
 
-### Buat Produk Baru - Griptape
+### Buat Produk Baru - Griptape (Memerlukan Session)
 POST {{baseUrl}}/products
 Content-Type: application/json
+Authorization: Bearer {{sessionId}}
 
 {
     "name": "Mob Grip Tape",
@@ -155,9 +179,10 @@ Content-Type: application/json
     "imageUrl": "mob-griptape.jpg"
 }
 
-### Buat Produk Baru - Bolt
+### Buat Produk Baru - Bolt (Memerlukan Session)
 POST {{baseUrl}}/products
 Content-Type: application/json
+Authorization: Bearer {{sessionId}}
 
 {
     "name": "Thunder Hardware Bolts",
@@ -168,9 +193,10 @@ Content-Type: application/json
     "imageUrl": "thunder-bolts.jpg"
 }
 
-### Update Produk
+### Update Produk (Memerlukan Session)
 PUT {{baseUrl}}/products/1
 Content-Type: application/json
+Authorization: Bearer {{sessionId}}
 
 {
     "name": "Element Skateboard Deck Pro",
@@ -178,22 +204,26 @@ Content-Type: application/json
     "stock": 5
 }
 
-### Hapus Produk
+### Hapus Produk (Memerlukan Session)
 DELETE {{baseUrl}}/products/1
+Authorization: Bearer {{sessionId}}
 
 ### ============================================================
-### ORDERS (PESANAN)
+### ORDERS (PESANAN) - Memerlukan Session
 ### ============================================================
 
 ### Dapatkan Semua Pesanan
 GET {{baseUrl}}/orders
+Authorization: Bearer {{sessionId}}
 
 ### Dapatkan Pesanan berdasarkan ID
 GET {{baseUrl}}/orders/1
+Authorization: Bearer {{sessionId}}
 
 ### Buat Pesanan Baru
 POST {{baseUrl}}/orders
 Content-Type: application/json
+Authorization: Bearer {{sessionId}}
 
 {
     "userId": 1,
@@ -207,6 +237,7 @@ Content-Type: application/json
 ### Update Pesanan
 PUT {{baseUrl}}/orders/1
 Content-Type: application/json
+Authorization: Bearer {{sessionId}}
 
 {
     "quantity": 3,
@@ -216,6 +247,7 @@ Content-Type: application/json
 ### Update Status Pesanan
 PATCH {{baseUrl}}/orders/1/status
 Content-Type: application/json
+Authorization: Bearer {{sessionId}}
 
 {
     "status": "shipped"
@@ -223,6 +255,7 @@ Content-Type: application/json
 
 ### Hapus Pesanan
 DELETE {{baseUrl}}/orders/1
+Authorization: Bearer {{sessionId}}
 
 ### Dapatkan Riwayat Pesanan Pengguna
 GET {{baseUrl}}/orders/user/1

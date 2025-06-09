@@ -1,16 +1,27 @@
 import User from "../models/User.js";
+import { validateSession } from "../controllers/AuthController.js";
 
 export const verifySession = async (req, res, next) => {
-  // Check if user is logged in via session
-  if (!req.session || !req.session.userId) {
-    return res.status(401).json({ message: "Not logged in" });
+  // Get session ID from Authorization header
+  const authHeader = req.headers['authorization'];
+  const sessionId = authHeader && authHeader.startsWith('Bearer ') 
+    ? authHeader.substring(7) 
+    : null;
+  
+  if (!sessionId) {
+    return res.status(401).json({ message: "Session ID required" });
   }
   
   try {
+    // Validate session and get user ID
+    const userId = validateSession(sessionId);
+    if (!userId) {
+      return res.status(401).json({ message: "Invalid or expired session" });
+    }
+    
     // Get user from database to ensure user still exists
-    const user = await User.findByPk(req.session.userId);
+    const user = await User.findByPk(userId);
     if (!user) {
-      req.session.destroy();
       return res.status(401).json({ message: "User not found" });
     }
     
@@ -26,3 +37,6 @@ export const verifySession = async (req, res, next) => {
     return res.status(500).json({ message: "Server error" });
   }
 };
+
+// Keep the old function name for backward compatibility
+export const verifyUserToken = verifySession;
