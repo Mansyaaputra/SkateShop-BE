@@ -6,8 +6,43 @@
 ### BASE URL
 @baseUrl = http://localhost:5000
 
-### Contoh Session ID (ganti dengan sessionId dari response login)
-@sessionId = your_session_id_here
+### Session ID (update dengan sessionId dari response login)
+@sessionId = INVALID_SESSION_GET_NEW_ONE
+
+# IMPORTANT: Session ID di atas TIDAK VALID!
+# Session hilang setiap server restart (in-memory storage)
+# SOLUSI:
+# 1. Jalankan "Fresh Login" di bawah untuk dapat sessionId baru
+# 2. Copy sessionId dari response (tanpa quotes)  
+# 3. Ganti nilai @sessionId di atas dengan sessionId yang baru
+# 4. Test endpoint lainnya
+
+### ============================================================
+### QUICK FIX - JALANKAN URUTAN INI UNTUK DAPATKAN SESSION BARU
+### ============================================================
+
+### 1. Debug: Cek Session yang Ada di Server (Jalankan Pertama!)
+GET {{baseUrl}}/auth/debug/sessions
+
+### 2. Fresh Login - Untuk Dapat SessionId Baru (Jalankan Kedua!)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "user_test@example.com",
+    "password": "password123"
+}
+
+### 3. Test Auth - Setelah Update @sessionId (Jalankan Ketiga!)
+GET {{baseUrl}}/auth/check
+Authorization: Bearer {{sessionId}}
+
+# LANGKAH TESTING:
+# 1. Jalankan "Register" untuk membuat user baru
+# 2. Jalankan "Login" untuk mendapat sessionId
+# 3. Copy sessionId dari response login
+# 4. Ganti nilai @sessionId di atas dengan sessionId yang didapat
+# 5. Test endpoint lain yang memerlukan authentication
 
 ### ============================================================
 ### AUTENTIKASI
@@ -22,7 +57,15 @@ Content-Type: application/json
     "email": "user_test@example.com",
     "password": "password123"
 }
+### Register - Mendaftarkan pengguna baru
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
 
+{
+    "username": "ut",
+    "email": "ut@example.com",
+    "password": "password123"
+}
 ### Login - Masuk ke akun (akan memberikan sessionId)
 POST {{baseUrl}}/auth/login
 Content-Type: application/json
@@ -31,7 +74,14 @@ Content-Type: application/json
     "email": "user_test@example.com",
     "password": "password123"
 }
+### Login - Masuk ke akun (akan memberikan sessionId)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
 
+{
+    "email": "ut@example.com",
+    "password": "password123"
+}
 ### Cek Status Auth - Memeriksa apakah session masih valid
 GET {{baseUrl}}/auth/check
 Authorization: Bearer {{sessionId}}

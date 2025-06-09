@@ -5,6 +5,10 @@ import crypto from "crypto";
 // In-memory store for user sessions (in production, use Redis or database)
 const userSessions = new Map();
 
+// Log startup
+console.log('🔄 Session storage initialized. All previous sessions cleared.');
+console.log('📊 Session store size:', userSessions.size);
+
 // Generate a secure session ID for user authentication
 const generateSessionId = (userId) => {
   const sessionId = crypto.randomBytes(32).toString('hex');
@@ -13,25 +17,45 @@ const generateSessionId = (userId) => {
     createdAt: new Date(),
     lastAccessed: new Date()
   });
+  
+  console.log('🆕 New session created:');
+  console.log('  - SessionId:', sessionId);
+  console.log('  - UserId:', userId);
+  console.log('  - Total sessions:', userSessions.size);
+  
   return sessionId;
 };
 
 // Validate user session
 export const validateSession = (sessionId) => {
+  console.log('🔍 validateSession called with sessionId:', sessionId);
+  console.log('📊 Current sessions count:', userSessions.size);
+  console.log('📋 All sessions:', Array.from(userSessions.keys()));
+  
   const sessionData = userSessions.get(sessionId);
-  if (!sessionData) return null;
+  console.log('📦 sessionData found:', !!sessionData);
+  
+  if (!sessionData) {
+    console.log('❌ Session not found in storage');
+    return null;
+  }
   
   // Check if session is expired (24 hours from last access)
   const timeSinceLastAccess = Date.now() - sessionData.lastAccessed.getTime();
   const maxAge = 24 * 60 * 60 * 1000; // 24 hours
   
+  console.log('⏰ Time since last access:', timeSinceLastAccess);
+  console.log('⏰ Max age:', maxAge);
+  
   if (timeSinceLastAccess > maxAge) {
+    console.log('🕐 Session expired, removing...');
     userSessions.delete(sessionId);
     return null;
   }
   
   // Update last accessed time
   sessionData.lastAccessed = new Date();
+  console.log('✅ Session valid, userId:', sessionData.userId);
   
   return sessionData.userId;
 };
@@ -134,13 +158,23 @@ export const logoutAll = async (req, res) => {
 export const checkAuth = async (req, res) => {
   const sessionId = req.headers['authorization']?.replace('Bearer ', '');
   
+  console.log('🔍 checkAuth called with sessionId:', sessionId ? 'PROVIDED' : 'MISSING');
+  
   if (!sessionId) {
-    return res.json({ loggedIn: false });
+    console.log('❌ No session ID in checkAuth');
+    return res.json({ 
+      loggedIn: false, 
+      reason: 'No session ID provided' 
+    });
   }
   
   const userId = validateSession(sessionId);
   if (!userId) {
-    return res.json({ loggedIn: false });
+    console.log('❌ Invalid session in checkAuth');
+    return res.json({ 
+      loggedIn: false, 
+      reason: 'Invalid or expired session' 
+    });
   }
   
   try {
@@ -149,9 +183,15 @@ export const checkAuth = async (req, res) => {
     });
     
     if (!user) {
+      console.log('❌ User not found in checkAuth');
       removeSession(sessionId);
-      return res.json({ loggedIn: false });
+      return res.json({ 
+        loggedIn: false, 
+        reason: 'User not found' 
+      });
     }
+    
+    console.log('✅ checkAuth successful for user:', user.username);
     
     res.json({ 
       loggedIn: true,
@@ -159,10 +199,18 @@ export const checkAuth = async (req, res) => {
         id: user.id,
         username: user.username,
         email: user.email
+      },
+      sessionInfo: {
+        sessionId: sessionId.substring(0, 8) + '...',
+        userId: userId
       }
     });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.log('💥 Error in checkAuth:', error.message);
+    res.status(500).json({ 
+      loggedIn: false, 
+      reason: 'Server error' 
+    });
   }
 };
 
@@ -185,5 +233,23 @@ export const getSessionInfo = (req, res) => {
     createdAt: sessionData.createdAt,
     lastAccessed: sessionData.lastAccessed,
     isValid: true
+  });
+};
+
+// Debug endpoint to see all sessions
+export const getAllSessions = (req, res) => {
+  const sessions = [];
+  for (const [sessionId, sessionData] of userSessions) {
+    sessions.push({
+      sessionId,
+      userId: sessionData.userId,
+      createdAt: sessionData.createdAt,
+      lastAccessed: sessionData.lastAccessed
+    });
+  }
+  
+  res.json({
+    totalSessions: userSessions.size,
+    sessions
   });
 };

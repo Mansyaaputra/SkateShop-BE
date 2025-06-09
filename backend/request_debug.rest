@@ -1,0 +1,101 @@
+# 🚨 SOLUSI: "Invalid or expired session"
+# File khusus untuk mengatasi masalah session tidak valid
+# IKUTI URUTAN STEP 1-5 SECARA BERURUTAN!
+
+### BASE URL
+@baseUrl = http://localhost:5000
+
+### Session ID (akan diupdate setelah login)
+@sessionId = 52bc7f2c630a5da37d23efe99b1beb930c42b0d388142e4ef6f17b9e7b792878
+
+# 🔧 CARA MENGATASI SESSION ERROR:
+# Step 1: Cek session yang ada (biasanya kosong jika server restart)
+# Step 2: Login untuk dapat session baru  
+# Step 3: Copy sessionId dari response login
+# Step 4: Update @sessionId di atas dengan sessionId yang baru
+# Step 5: Test auth untuk memastikan session bekerja
+# Step 6: Gunakan session untuk endpoint lainnya
+
+### ============================================================
+### STEP 1: CEK SESSION YANG ADA (JALANKAN PERTAMA)
+### ============================================================
+
+### Step 1: Debug Sessions - Cek session di server
+GET {{baseUrl}}/auth/debug/sessions
+
+# Response yang diharapkan jika server baru restart:
+# {"totalSessions": 0, "sessions": []}
+
+### ============================================================  
+### STEP 2: LOGIN UNTUK DAPAT SESSION BARU (JALANKAN KEDUA)
+### ============================================================
+
+### Step 2: Fresh Login - Dapatkan SessionId Baru
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "user_test@example.com", 
+    "password": "password123"
+}
+
+# SETELAH JALANKAN LOGIN:
+# 1. Copy nilai "sessionId" dari response (tanpa quotes)
+# 2. Paste ke @sessionId di atas
+# 3. Lanjut ke Step 3
+
+### ============================================================
+### STEP 3: TEST AUTH DENGAN SESSION BARU (JALANKAN KETIGA)
+### ============================================================
+
+### Step 3: Test Auth - Pastikan session bekerja
+GET {{baseUrl}}/auth/check
+Authorization: Bearer {{sessionId}}
+
+# Response yang diharapkan jika berhasil:
+# {"loggedIn": true, "user": {...}}
+
+### ============================================================
+### STEP 4: ENDPOINT TAMBAHAN UNTUK VERIFIKASI
+### ============================================================
+
+### Step 4a: Session Info Detail
+GET {{baseUrl}}/auth/session-info
+Authorization: Bearer {{sessionId}}
+
+### Step 4b: Test Protected Endpoint  
+GET {{baseUrl}}/users
+Authorization: Bearer {{sessionId}}
+
+### ============================================================
+### JIKA LOGIN GAGAL - REGISTER USER DULU
+### ============================================================
+
+### Register User Test (jika user belum ada)
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "username": "user_test",
+    "email": "user_test@example.com",
+    "password": "password123"
+}
+
+### Register User Alternatif
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+    "username": "ut", 
+    "email": "ut@example.com",
+    "password": "password123"
+}
+
+### Login dengan User Alternatif
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+    "email": "ut@example.com",
+    "password": "password123"
+}

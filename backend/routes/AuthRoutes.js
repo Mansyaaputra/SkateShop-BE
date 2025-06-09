@@ -1,5 +1,5 @@
 import express from "express";
-import { register, login, logout, checkAuth, logoutAll, getSessionInfo } from "../controllers/AuthController.js";
+import { register, login, logout, checkAuth, logoutAll, getSessionInfo, getAllSessions } from "../controllers/AuthController.js";
 import { verifySession } from "../middleware/AuthMiddleware.js";
 
 const router = express.Router();
@@ -10,5 +10,6 @@ router.post("/logout", verifySession, logout);
 router.post("/logout-all", verifySession, logoutAll);
 router.get("/check", checkAuth);
 router.get("/session-info", getSessionInfo);
+router.get("/debug/sessions", getAllSessions);
 
 export default router;
