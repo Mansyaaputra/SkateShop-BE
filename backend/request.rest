@@ -1,148 +1,6 @@
-# API Skateshop - Session Based Authentication
-# File ini berisi request untuk menguji API backend Skateshop dengan session
-# Gunakan ekstensi "REST Client" di VS Code untuk menjalankan request ini
-# Setelah login, copy sessionId dari response dan gunakan sebagai Bearer token
-
-### BASE URL
+# API Skateshop - Produk Saja (localhost)
 @baseUrl = http://localhost:5000
 
-### Session ID (update dengan sessionId dari response login)
-@sessionId = INVALID_SESSION_GET_NEW_ONE
-
-# IMPORTANT: Session ID di atas TIDAK VALID!
-# Session hilang setiap server restart (in-memory storage)
-# SOLUSI:
-# 1. Jalankan "Fresh Login" di bawah untuk dapat sessionId baru
-# 2. Copy sessionId dari response (tanpa quotes)  
-# 3. Ganti nilai @sessionId di atas dengan sessionId yang baru
-# 4. Test endpoint lainnya
-
-### ============================================================
-### QUICK FIX - JALANKAN URUTAN INI UNTUK DAPATKAN SESSION BARU
-### ============================================================
-
-### 1. Debug: Cek Session yang Ada di Server (Jalankan Pertama!)
-GET {{baseUrl}}/auth/debug/sessions
-
-### 2. Fresh Login - Untuk Dapat SessionId Baru (Jalankan Kedua!)
-POST {{baseUrl}}/auth/login
-Content-Type: application/json
-
-{
-    "email": "user_test@example.com",
-    "password": "password123"
-}
-
-### 3. Test Auth - Setelah Update @sessionId (Jalankan Ketiga!)
-GET {{baseUrl}}/auth/check
-Authorization: Bearer {{sessionId}}
-
-# LANGKAH TESTING:
-# 1. Jalankan "Register" untuk membuat user baru
-# 2. Jalankan "Login" untuk mendapat sessionId
-# 3. Copy sessionId dari response login
-# 4. Ganti nilai @sessionId di atas dengan sessionId yang didapat
-# 5. Test endpoint lain yang memerlukan authentication
-
-### ============================================================
-### AUTENTIKASI
-### ============================================================
-
-### Register - Mendaftarkan pengguna baru
-POST {{baseUrl}}/auth/register
-Content-Type: application/json
-
-{
-    "username": "user_test",
-    "email": "user_test@example.com",
-    "password": "password123"
-}
-### Register - Mendaftarkan pengguna baru
-POST {{baseUrl}}/auth/register
-Content-Type: application/json
-
-{
-    "username": "ut",
-    "email": "ut@example.com",
-    "password": "password123"
-}
-### Login - Masuk ke akun (akan memberikan sessionId)
-POST {{baseUrl}}/auth/login
-Content-Type: application/json
-
-{
-    "email": "user_test@example.com",
-    "password": "password123"
-}
-### Login - Masuk ke akun (akan memberikan sessionId)
-POST {{baseUrl}}/auth/login
-Content-Type: application/json
-
-{
-    "email": "ut@example.com",
-    "password": "password123"
-}
-### Cek Status Auth - Memeriksa apakah session masih valid
-GET {{baseUrl}}/auth/check
-Authorization: Bearer {{sessionId}}
-
-### Info Session - Mendapatkan informasi session
-GET {{baseUrl}}/auth/session-info
-Authorization: Bearer {{sessionId}}
-
-### Logout - Keluar dari akun (menghapus session)
-POST {{baseUrl}}/auth/logout
-Authorization: Bearer {{sessionId}}
-
-### Logout All - Keluar dari semua device
-POST {{baseUrl}}/auth/logout-all
-Authorization: Bearer {{sessionId}}
-
-### ============================================================
-### USERS (PENGGUNA) - Memerlukan Session
-### ============================================================
-
-### Dapatkan Semua Pengguna
-GET {{baseUrl}}/users
-Authorization: Bearer {{sessionId}}
-
-### Dapatkan Pengguna berdasarkan ID
-GET {{baseUrl}}/users/1
-Authorization: Bearer {{sessionId}}
-
-### Buat Pengguna Baru
-POST {{baseUrl}}/users
-Content-Type: application/json
-Authorization: Bearer {{sessionId}}
-
-{
-    "username": "new_user",
-    "email": "new_user@example.com",
-    "password": "password123"
-}
-
-### Update Pengguna
-PUT {{baseUrl}}/users/1
-Content-Type: application/json
-Authorization: Bearer {{sessionId}}
-
-{
-    "username": "updated_username"
-}
-
-### Hapus Pengguna
-DELETE {{baseUrl}}/users/1
-Authorization: Bearer {{sessionId}}
-
-### ============================================================
-### PRODUCTS (PRODUK) - Operasi Admin Memerlukan Session
-### ============================================================
-
-### Dapatkan Daftar Kategori Produk (Publik)
-GET {{baseUrl}}/products/categories
-
-### Dapatkan Ukuran yang Tersedia untuk Kategori Deck (Publik)
-GET {{baseUrl}}/products/categories/deck/sizes
 
 ### Dapatkan Semua Produk (Publik)
 GET {{baseUrl}}/products
@@ -150,162 +8,31 @@ GET {{baseUrl}}/products
 ### Filter Produk berdasarkan Kategori (Publik)
 GET {{baseUrl}}/products?category=deck
 
-### Filter Produk berdasarkan Kategori dan Ukuran (Publik)
-GET {{baseUrl}}/products?category=deck&size=8.0
-
 ### Dapatkan Produk berdasarkan ID (Publik)
 GET {{baseUrl}}/products/1
 
-### Buat Produk Baru - Deck (Memerlukan Session)
+### Buat Produk Baru
 POST {{baseUrl}}/products
 Content-Type: application/json
-Authorization: Bearer {{sessionId}}
 
 {
     "name": "Element Skateboard Deck",
     "description": "Deck kayu maple 7-ply berkualitas tinggi dari Element",
     "category": "deck",
-    "size": "8.0",
     "price": 750000,
-    "stock": 10,
     "imageUrl": "element-deck.jpg"
 }
 
-### Buat Produk Baru - Trucks (Memerlukan Session)
-POST {{baseUrl}}/products
-Content-Type: application/json
-Authorization: Bearer {{sessionId}}
-
-{
-    "name": "Independent Stage 11 Trucks",
-    "description": "Trucks berkualitas tinggi, kuat dan tahan lama",
-    "category": "trucks",
-    "size": "149mm",
-    "price": 650000,
-    "stock": 8,
-    "imageUrl": "independent-trucks.jpg"
-}
-
-### Buat Produk Baru - Wheels (Memerlukan Session)
-POST {{baseUrl}}/products
-Content-Type: application/json
-Authorization: Bearer {{sessionId}}
-
-{
-    "name": "Spitfire Formula Four Wheels",
-    "description": "Wheels dengan grip dan durabilitas terbaik",
-    "category": "wheels",
-    "size": "52mm",
-    "price": 450000,
-    "stock": 12,
-    "imageUrl": "spitfire-wheels.jpg"
-}
-
-### Buat Produk Baru - Bearing (Memerlukan Session)
-POST {{baseUrl}}/products
-Content-Type: application/json
-Authorization: Bearer {{sessionId}}
-
-{
-    "name": "Bones Reds Bearings",
-    "description": "Bearing presisi tinggi dengan kecepatan maksimal",
-    "category": "bearing",
-    "price": 350000,
-    "stock": 15,
-    "imageUrl": "bones-bearings.jpg"
-}
-
-### Buat Produk Baru - Griptape (Memerlukan Session)
-POST {{baseUrl}}/products
-Content-Type: application/json
-Authorization: Bearer {{sessionId}}
-
-{
-    "name": "Mob Grip Tape",
-    "description": "Griptape dengan daya cengkeram maksimal",
-    "category": "griptape",
-    "price": 150000,
-    "stock": 20,
-    "imageUrl": "mob-griptape.jpg"
-}
-
-### Buat Produk Baru - Bolt (Memerlukan Session)
-POST {{baseUrl}}/products
-Content-Type: application/json
-Authorization: Bearer {{sessionId}}
-
-{
-    "name": "Thunder Hardware Bolts",
-    "description": "Bolt dan mur berkualitas tinggi untuk memasang trucks",
-    "category": "bolt",
-    "price": 80000,
-    "stock": 25,
-    "imageUrl": "thunder-bolts.jpg"
-}
-
-### Update Produk (Memerlukan Session)
+### Update Produk
 PUT {{baseUrl}}/products/1
 Content-Type: application/json
-Authorization: Bearer {{sessionId}}
 
 {
-    "name": "Element Skateboard Deck Pro",
+    "name": "Santa Skateboard Deck Pro",
+    "category": "deck",
     "price": 800000,
-    "stock": 5
+    "imageUrl": "https://nhsskatedirect.com/cdn/shop/files/79688_1800x.jpg?v=1749189831"
 }
 
-### Hapus Produk (Memerlukan Session)
+### Hapus Produk
 DELETE {{baseUrl}}/products/1
-Authorization: Bearer {{sessionId}}
-
-### ============================================================
-### ORDERS (PESANAN) - Memerlukan Session
-### ============================================================
-
-### Dapatkan Semua Pesanan
-GET {{baseUrl}}/orders
-Authorization: Bearer {{sessionId}}
-
-### Dapatkan Pesanan berdasarkan ID
-GET {{baseUrl}}/orders/1
-Authorization: Bearer {{sessionId}}
-
-### Buat Pesanan Baru
-POST {{baseUrl}}/orders
-Content-Type: application/json
-Authorization: Bearer {{sessionId}}
-
-{
-    "userId": 1,
-    "productId": 1,
-    "quantity": 2,
-    "totalPrice": 1600000,
-    "status": "pending",
-    "shippingAddress": "Jl. Contoh No. 123, Jakarta Selatan"
-}
-
-### Update Pesanan
-PUT {{baseUrl}}/orders/1
-Content-Type: application/json
-Authorization: Bearer {{sessionId}}
-
-{
-    "quantity": 3,
-    "totalPrice": 2400000
-}
-
-### Update Status Pesanan
-PATCH {{baseUrl}}/orders/1/status
-Content-Type: application/json
-Authorization: Bearer {{sessionId}}
-
-{
-    "status": "shipped"
-}
-
-### Hapus Pesanan
-DELETE {{baseUrl}}/orders/1
-Authorization: Bearer {{sessionId}}
-
-### Dapatkan Riwayat Pesanan Pengguna
-GET {{baseUrl}}/orders/user/1

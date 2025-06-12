@@ -4,10 +4,9 @@ import cors from "cors"; // import cors
 import db from "./config/Database.js";
 
 // Import routes
-import AuthRoutes from "./routes/AuthRoutes.js";
-import UserRoutes from "./routes/UserRoutes.js";
+
 import ProductRoutes from "./routes/ProductRoutes.js";
-import OrderRoutes from "./routes/OrderRoutes.js";
+
 
 dotenv.config();
 const app = express();  
@@ -19,10 +18,8 @@ app.use(cors({
 app.use(express.json()); // parsing JSON body
 
 // Register routes
-app.use("/auth", AuthRoutes);
-app.use("/users", UserRoutes);
+
 app.use("/products", ProductRoutes);
-app.use("/orders", OrderRoutes);
 
 // Sync DB
 db.sync({ alter: true }) // alter: true akan update tabel sesuai model tanpa drop data
