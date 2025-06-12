@@ -1,5 +1,5 @@
 # API Skateshop - Produk Saja (localhost)
-@baseUrl = http://localhost:5000
+@baseUrl = https://skateshop-backend-663618957788.asia-southeast1.run.app
 
 
 ### Dapatkan Semua Produk (Publik)
